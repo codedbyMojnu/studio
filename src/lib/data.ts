@@ -20,7 +20,7 @@ export const GLOBAL_WISDOM_ENTRIES: WisdomEntry[] = [
     category: 'Stoicism',
   },
   {
-    id:p 'gw-4',
+    id: 'gw-4',
     title: 'Ego is the Enemy',
     description: 'Practice humility and confidence over ego and arrogance.',
     category: 'Stoicism',
