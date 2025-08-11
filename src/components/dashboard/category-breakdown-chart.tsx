@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -16,6 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { GLOBAL_WISDOM_ENTRIES, USER_LOGS } from "@/lib/data"
+import { Badge } from "@/components/ui/badge"
 
 const chartConfig = {
   Stoicism: { label: "Stoicism", color: "hsl(var(--chart-1))" },
@@ -24,7 +26,7 @@ const chartConfig = {
   "Danger Zone": { label: "Danger Zone", color: "hsl(var(--destructive))" },
 };
 
-const processCategoryData = () => {
+export const processCategoryData = () => {
     const categoryData: { [key: string]: { applied: number; missed: number; total: number } } = {};
 
     USER_LOGS.forEach(log => {
@@ -38,47 +40,61 @@ const processCategoryData = () => {
         }
     });
 
-    let dangerCategory = '';
-    let maxMissedRate = -1;
+    const dangerCategories: string[] = [];
 
-    Object.entries(categoryData).forEach(([category, data]) => {
-        const missedRate = data.missed / data.total;
-        if (missedRate > maxMissedRate) {
-            maxMissedRate = missedRate;
-            dangerCategory = category;
+    const chartData = Object.entries(categoryData).map(([category, data]) => {
+        const appliedRate = data.total > 0 ? data.applied / data.total : 0;
+        const isDanger = appliedRate < 0.8;
+        if (isDanger) {
+            dangerCategories.push(category);
         }
-    });
 
-    const chartData = Object.entries(categoryData).map(([name, value]) => ({
-      name,
-      value: value.total,
-      fill: name === dangerCategory ? chartConfig["Danger Zone"].color : chartConfig[name as keyof typeof chartConfig]?.color,
-      isDanger: name === dangerCategory,
-    }));
+        return {
+          name: category,
+          value: data.total,
+          applied: data.applied,
+          missed: data.missed,
+          appliedRate: Math.round(appliedRate * 100),
+          fill: isDanger ? chartConfig["Danger Zone"].color : chartConfig[category as keyof typeof chartConfig]?.color,
+        };
+    });
     
-    return { chartData, dangerCategory };
+    return { chartData, dangerCategories };
 };
 
 export function CategoryBreakdownChart() {
-  const { chartData, dangerCategory } = processCategoryData();
+  const { chartData, dangerCategories } = processCategoryData();
+  const dangerZoneText = dangerCategories.length > 0
+    ? `Pay special attention to: ${dangerCategories.join(', ')}.`
+    : 'All categories are above the 80% applied threshold. Great job!';
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Category Breakdown</CardTitle>
         <CardDescription>
-          {dangerCategory ? `Pay special attention to ${dangerCategory}, your current "danger zone".` : 'Distribution of your logged wisdom entries across categories.'}
+            {dangerZoneText}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex items-center justify-center">
+      <CardContent className="flex flex-col items-center justify-center">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square h-[250px]"
+          className="mx-auto aspect-square h-[200px]"
         >
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={
+                <ChartTooltipContent
+                  formatter={(value, name, props) => (
+                    <div className="flex flex-col">
+                      <span>Total Logs: {props.payload.value}</span>
+                      <span>Applied: {props.payload.applied} ({props.payload.appliedRate}%)</span>
+                      <span>Missed: {props.payload.missed}</span>
+                    </div>
+                  )}
+                />
+              }
             />
             <Pie
               data={chartData}
@@ -93,6 +109,19 @@ export function CategoryBreakdownChart() {
             </Pie>
           </PieChart>
         </ChartContainer>
+         <div className="flex flex-wrap justify-center gap-2 mt-4">
+            {Object.entries(chartConfig).map(([key, value]) => {
+                if(key === 'Danger Zone') return null;
+                const data = chartData.find(d => d.name === key);
+                if (!data) return null;
+                return (
+                    <Badge key={key} variant="outline" className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full" style={{backgroundColor: data.fill}}></span>
+                        {value.label} ({data.appliedRate}%)
+                    </Badge>
+                )
+            })}
+        </div>
       </CardContent>
     </Card>
   )

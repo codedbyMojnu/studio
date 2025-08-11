@@ -1,3 +1,4 @@
+
 import { Header } from "@/components/header";
 import { DailyLogger } from "@/components/dashboard/daily-logger";
 import { WisdomChart } from "@/components/dashboard/wisdom-chart";
@@ -5,6 +6,7 @@ import { AiSuggestions } from "@/components/dashboard/ai-suggestions";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CategoryBreakdownChart } from "@/components/dashboard/category-breakdown-chart";
 import { LifetimeStatsChart } from "@/components/dashboard/lifetime-stats-chart";
+import { DangerZoneAlert } from "@/components/dashboard/danger-zone-alert";
 
 export default function DashboardPage() {
   return (
@@ -12,6 +14,11 @@ export default function DashboardPage() {
       <Header title="Dashboard" />
       <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background/80">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+          <div className="lg:col-span-3">
+            <DangerZoneAlert />
+          </div>
+
           <div className="lg:col-span-3">
              <Card className="border-2 border-primary/50 bg-primary/5">
                 <CardHeader>
