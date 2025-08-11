@@ -88,6 +88,7 @@ export function CategoryBreakdownChart() {
                 <ChartTooltipContent
                   formatter={(value, name, props) => (
                     <div className="flex flex-col">
+                      <span className="font-bold">{name}</span>
                       <span>Total Logs: {props.payload.value}</span>
                       <span>Applied: {props.payload.applied} ({props.payload.appliedRate}%)</span>
                       <span>Missed: {props.payload.missed}</span>
