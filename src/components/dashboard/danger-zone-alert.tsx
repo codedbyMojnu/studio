@@ -15,8 +15,7 @@ export function DangerZoneAlert() {
 
   return (
     <Alert variant="destructive" className={cn(
-        "border-2 border-destructive/80 bg-destructive/10 text-destructive animate-pulse-slow",
-        "hover:animate-none"
+        "border-2 border-destructive/80 bg-destructive/10 text-destructive"
     )}>
       <AlertTriangle className="h-5 w-5" />
       <AlertTitle className="font-headline text-xl">Attention Required!</AlertTitle>
