@@ -3,6 +3,8 @@ import { DailyLogger } from "@/components/dashboard/daily-logger";
 import { WisdomChart } from "@/components/dashboard/wisdom-chart";
 import { AiSuggestions } from "@/components/dashboard/ai-suggestions";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { CategoryBreakdownChart } from "@/components/dashboard/category-breakdown-chart";
+import { LifetimeStatsChart } from "@/components/dashboard/lifetime-stats-chart";
 
 export default function DashboardPage() {
   return (
@@ -28,6 +30,11 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-6">
             <DailyLogger />
             <AiSuggestions />
+          </div>
+
+          <div className="lg:col-span-3 grid md:grid-cols-2 gap-6">
+            <CategoryBreakdownChart />
+            <LifetimeStatsChart />
           </div>
         </div>
       </main>
